@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -145,9 +146,9 @@ function Footer() {
               Legal
             </h3>
             <ul className="space-y-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
-              <li><Link href="/aviso-legal" className="hover:underline">Aviso Legal</Link></li>
-              <li><Link href="/privacidad" className="hover:underline">Política de Privacidad</Link></li>
-              <li><Link href="/cookies" className="hover:underline">Cookies</Link></li>
+              <li><Link href="/legal/aviso-legal" className="hover:underline">Aviso Legal</Link></li>
+              <li><Link href="/legal/politica-privacidad" className="hover:underline">Política de Privacidad</Link></li>
+              <li><Link href="/legal/politica-cookies" className="hover:underline">Política de Cookies</Link></li>
             </ul>
           </div>
         </div>
@@ -175,6 +176,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <CookieBanner />
       </body>
     </html>
   );
