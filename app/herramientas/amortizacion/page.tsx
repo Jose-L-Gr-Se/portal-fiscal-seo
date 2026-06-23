@@ -1,57 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { aeatData } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Calculadora de Amortización Fiscal — Tablas AEAT",
+  title: "Calculadora de Amortización Fiscal — Estimación Directa Simplificada AEAT",
   description:
-    "Calcula la amortización fiscal de inmovilizado material e intangible según las tablas oficiales del Reglamento del IS (RD 634/2015). Métodos lineal, degresivo y más.",
+    "Calcula la amortización lineal de inmovilizado material e intangible según las tablas oficiales AEAT para Estimación Directa Simplificada. Actualizado 2024.",
 };
 
-const categorias = [
-  {
-    id: "inmuebles",
-    nombre: "Inmuebles",
-    descripcion: "Edificios industriales, comerciales, residenciales y construcciones.",
-    elementos: [
-      { id: "edificios-industriales", nombre: "Edificios Industriales", coef: "3%", periodo: "68 años" },
-      { id: "edificios-comerciales", nombre: "Edificios Comerciales", coef: "2%", periodo: "100 años" },
-    ],
-  },
-  {
-    id: "elementos-mecanicos",
-    nombre: "Elementos Mecánicos",
-    descripcion: "Maquinaria, instalaciones, útiles y herramientas.",
-    elementos: [
-      { id: "maquinaria", nombre: "Maquinaria", coef: "12%", periodo: "18 años" },
-      { id: "instalaciones", nombre: "Instalaciones", coef: "10%", periodo: "20 años" },
-    ],
-  },
-  {
-    id: "elementos-transporte",
-    nombre: "Elementos de Transporte",
-    descripcion: "Vehículos, camiones, embarcaciones y aeronaves.",
-    elementos: [
-      { id: "vehiculos-turismo", nombre: "Vehículos Turismo", coef: "16%", periodo: "14 años" },
-      { id: "camiones", nombre: "Camiones y Furgonetas", coef: "20%", periodo: "10 años" },
-    ],
-  },
-  {
-    id: "equipos-informaticos",
-    nombre: "Equipos Informáticos",
-    descripcion: "Ordenadores, servidores, periféricos y sistemas.",
-    elementos: [
-      { id: "equipos-proceso-datos", nombre: "Equipos para Proceso de Datos", coef: "25%", periodo: "8 años" },
-      { id: "sistemas-telefonicos", nombre: "Sistemas y Equipos Telefónicos", coef: "20%", periodo: "10 años" },
-    ],
-  },
-];
+const ID_REGIMEN = "estimacion-directa-simplificada";
 
-const regimenes = [
-  { id: "lineal", nombre: "Lineal", descripcion: "Cuotas constantes" },
-  { id: "degresivo", nombre: "Degresivo", descripcion: "% sobre valor pendiente" },
-  { id: "numeros-digitos", nombre: "Suma dígitos", descripcion: "Vida útil ponderada" },
-  { id: "unidades-produccion", nombre: "Unidades producción", descripcion: "Por actividad" },
-];
+const categoriaLabels: Record<string, string> = {
+  inmuebles: "Inmuebles",
+  mobiliario: "Mobiliario e Instalaciones",
+  maquinaria: "Maquinaria",
+  vehiculos: "Vehículos",
+  tecnologia: "Equipos Informáticos",
+  software: "Software",
+  herramientas: "Útiles y Herramientas",
+  intangibles: "Inmovilizado Intangible",
+};
 
 export default function AmortizacionIndexPage() {
   return (
@@ -63,76 +31,72 @@ export default function AmortizacionIndexPage() {
           <span>/</span>
           <span style={{ color: "var(--foreground)" }}>Amortización Fiscal</span>
         </nav>
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span
+            className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+            style={{ backgroundColor: "var(--accent)", color: "var(--accent-foreground)" }}
+          >
+            Estimación Directa Simplificada
+          </span>
+          <span
+            className="rounded-full px-2.5 py-0.5 text-xs"
+            style={{ backgroundColor: "var(--secondary)", color: "var(--muted-foreground)" }}
+          >
+            Método Lineal · AEAT 2024
+          </span>
+        </div>
         <h1 className="text-3xl font-bold tracking-tight" style={{ color: "var(--foreground)" }}>
           Calculadora de Amortización Fiscal
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
-          Herramienta basada en las <strong style={{ color: "var(--foreground)" }}>tablas oficiales del Reglamento del Impuesto sobre Sociedades</strong>{" "}
-          (RD 634/2015, Anexo I). Selecciona la categoría del elemento y el método de amortización.
+          Selecciona el elemento de inmovilizado para calcular su amortización anual por el{" "}
+          <strong style={{ color: "var(--foreground)" }}>método lineal</strong>, según las tablas oficiales de la AEAT para
+          autónomos y pymes en <strong style={{ color: "var(--foreground)" }}>Estimación Directa Simplificada</strong>.
         </p>
       </div>
 
-      {/* Métodos disponibles */}
-      <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {regimenes.map((r) => (
-          <div
-            key={r.id}
-            className="rounded-lg border p-4"
-            style={{ borderColor: "var(--border)", backgroundColor: "var(--secondary)" }}
+      {/* Grid de elementos */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {aeatData.map((elem) => (
+          <Link
+            key={elem.id_elemento}
+            href={`/herramientas/amortizacion/${elem.categoria}/${elem.id_elemento}/${ID_REGIMEN}`}
+            className="group flex flex-col rounded-xl border p-5 transition-shadow hover:shadow-md"
+            style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}
           >
-            <div className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{r.nombre}</div>
-            <div className="mt-0.5 text-xs" style={{ color: "var(--muted-foreground)" }}>{r.descripcion}</div>
-          </div>
-        ))}
-      </div>
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <span
+                className="rounded px-1.5 py-0.5 font-mono text-xs font-semibold"
+                style={{ backgroundColor: "var(--secondary)", color: "var(--muted-foreground)" }}
+              >
+                {elem.codigo_aeat}
+              </span>
+              <span
+                className="rounded-full px-2 py-0.5 text-xs font-bold"
+                style={{ backgroundColor: "var(--accent)", color: "var(--accent-foreground)" }}
+              >
+                {elem.coeficiente_maximo}%
+              </span>
+            </div>
 
-      {/* Categorías y elementos */}
-      <div className="space-y-8">
-        {categorias.map((cat) => (
-          <div key={cat.id}>
-            <div className="mb-4 border-b pb-2" style={{ borderColor: "var(--border)" }}>
-              <h2 className="text-xl font-semibold" style={{ color: "var(--foreground)" }}>{cat.nombre}</h2>
-              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>{cat.descripcion}</p>
+            <h2
+              className="mb-1 flex-1 text-sm font-semibold leading-snug group-hover:underline"
+              style={{ color: "var(--foreground)" }}
+            >
+              {elem.nombre_elemento}
+            </h2>
+
+            <div className="mt-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
+              {categoriaLabels[elem.categoria] ?? elem.categoria} · {elem.periodo_maximo_años} años máx.
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {cat.elementos.map((elem) => (
-                <div
-                  key={elem.id}
-                  className="rounded-xl border p-5"
-                  style={{ borderColor: "var(--border)", backgroundColor: "var(--card)" }}
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-semibold" style={{ color: "var(--foreground)" }}>{elem.nombre}</h3>
-                    <span
-                      className="rounded px-2 py-0.5 text-xs font-bold"
-                      style={{ backgroundColor: "var(--accent)", color: "var(--accent-foreground)" }}
-                    >
-                      Máx. {elem.coef}
-                    </span>
-                  </div>
-                  <p className="mb-4 text-xs" style={{ color: "var(--muted-foreground)" }}>
-                    Período máximo: {elem.periodo}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {regimenes.map((r) => (
-                      <Link
-                        key={r.id}
-                        href={`/herramientas/amortizacion/${cat.id}/${elem.id}/${r.id}`}
-                        className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:opacity-80"
-                        style={{
-                          borderColor: "var(--primary)",
-                          color: "var(--primary)",
-                          backgroundColor: "transparent",
-                        }}
-                      >
-                        {r.nombre}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
+
+            <div
+              className="mt-3 text-xs font-medium"
+              style={{ color: "var(--primary)" }}
+            >
+              Calcular amortización →
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -141,9 +105,9 @@ export default function AmortizacionIndexPage() {
         className="mt-10 rounded-xl border p-5 text-sm"
         style={{ borderColor: "var(--border)", backgroundColor: "var(--secondary)", color: "var(--muted-foreground)" }}
       >
-        <strong style={{ color: "var(--foreground)" }}>Fuente normativa:</strong> Real Decreto 634/2015, de 10 de julio, por el que
-        se aprueba el Reglamento del Impuesto sobre Sociedades. Anexo I — Tabla de coeficientes de amortización.
-        Artículo 12 de la Ley 27/2014, de 27 de noviembre, del Impuesto sobre Sociedades (LIS).
+        <strong style={{ color: "var(--foreground)" }}>Fuente:</strong> Tablas de amortización para{" "}
+        <em>Estimación Directa Simplificada</em> publicadas por la Agencia Tributaria (AEAT). Método lineal aplicado
+        según el coeficiente máximo de cada elemento. Normativa: Orden HAC/304/2024 y disposiciones concordantes.
       </div>
     </div>
   );
