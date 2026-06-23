@@ -69,8 +69,59 @@ export default async function AmortizacionElementoPage({ params }: Props) {
   );
   if (!elem) notFound();
 
+  const BASE_URL = "https://portal-fiscal-seo.vercel.app";
+  const pageUrl = `${BASE_URL}/herramientas/amortizacion/${categoria}/${id_elemento}/${ID_REGIMEN}`;
+
+  const jsonLdWebApp = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: `Calculadora de Amortización Fiscal: ${elem.nombre_elemento}`,
+    url: pageUrl,
+    description: `Calcula la amortización fiscal lineal de ${elem.nombre_elemento} según las tablas oficiales AEAT para Estimación Directa Simplificada. Coeficiente máximo: ${elem.coeficiente_maximo}%.`,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    provider: {
+      "@type": "Organization",
+      name: "Portal Fiscal SEO",
+      url: BASE_URL,
+    },
+  };
+
+  const jsonLdFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `¿Cuál es el coeficiente máximo de amortización para ${elem.nombre_elemento}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Según las tablas oficiales de la AEAT para Estimación Directa Simplificada, el coeficiente máximo de amortización lineal para ${elem.nombre_elemento} es del ${elem.coeficiente_maximo}% anual (código ${elem.codigo_aeat}).`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `¿En cuántos años se amortiza fiscalmente ${elem.nombre_elemento}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `El período máximo de amortización fiscal para ${elem.nombre_elemento} es de ${elem.periodo_maximo_años} años. Aplicando el coeficiente mínimo (100% / ${elem.periodo_maximo_años} años), el bien queda totalmente amortizado en ese plazo.`,
+        },
+      },
+    ],
+  };
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebApp) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
+      />
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-6 flex flex-wrap gap-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
         <Link href="/" className="hover:underline">Inicio</Link>
@@ -167,5 +218,6 @@ export default async function AmortizacionElementoPage({ params }: Props) {
         aplicar estos valores en su declaración de IRPF o IS.
       </div>
     </div>
+    </>
   );
 }

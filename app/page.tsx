@@ -11,11 +11,11 @@ const herramientas = [
   {
     titulo: "Calculadora de Amortización Fiscal",
     descripcion:
-      "Calcula las cuotas de amortización según las tablas oficiales del Reglamento del Impuesto sobre Sociedades (RIS). Soporta método lineal, degresivo y unidades de producción.",
+      "Calcula las cuotas de amortización por el método lineal según las tablas oficiales AEAT para Estimación Directa Simplificada. Cubre 8 categorías de inmovilizado.",
     href: "/herramientas/amortizacion",
     badge: "AEAT 2024",
     estado: "Disponible",
-    categorias: ["Inmovilizado Material", "Inmovilizado Intangible", "Bienes Arrendados"],
+    categorias: ["Inmuebles", "Vehículos", "Maquinaria", "Tecnología", "Software", "Intangibles"],
   },
   {
     titulo: "Simulador IRPF",
